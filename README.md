@@ -149,34 +149,27 @@ The adaptive attacker and baselines live in [eval/attacker/](eval/attacker/) and
 
 ## Deploy with Docker
 
+Verified: `docker compose build` produces the API (~381 MB) and dashboard (~94 MB) images; the
+dashboard is served through nginx, which proxies the API and the WebSocket.
+
+Full stack (API + dashboard + Ollama) with a local model:
+
 ```powershell
 docker compose up --build
-docker compose exec ollama ollama pull qwen2.5:7b    # once
+docker compose exec ollama ollama pull qwen2.5:7b    # once; large download
 ```
+Open the dashboard at `http://localhost:8080` and the API docs at `http://localhost:8000/docs`.
 
-The dashboard is at `http://localhost:8080`, the API at `http://localhost:8000/docs`.
+API + dashboard only (no model, demo mode) — handy for a quick check or hosting:
 
-## Hosting
+```powershell
+# WEB_PORT lets you avoid a busy 8080; DEMO_MODE seeds one real illustrative incident.
+$env:DEMO_MODE="true"; $env:WEB_PORT="8090"; docker compose up -d --no-deps --build api web
+```
+Then `http://localhost:8090` (dashboard) and `http://localhost:8000/docs` (API). The demo badge
+appears top-right. Stop with `docker compose down`.
 
-The repo is wired for free hosting. The dashboard reads the API address from `VITE_API_URL`,
-the API honors `ALLOWED_ORIGINS` (CORS) and `$PORT`, and `DEMO_MODE=true` seeds one real
-illustrative incident so a hosted instance is not empty. Config files: `render.yaml` (API),
-`web/vercel.json` (dashboard), `spaces/huggingface/` (an all-in-one demo Space), and `docs/`
-(a GitHub Pages landing page).
-
-| What | Where | Notes |
-|---|---|---|
-| Dashboard | Vercel | root `web/`, set `VITE_API_URL` to the API URL |
-| API | Render | Docker (`Dockerfile.api`), `DEMO_MODE=true`, `ALLOWED_ORIGINS=<dashboard URL>` |
-| All-in-one demo | Hugging Face Space | Docker SDK, clones the repo, port 7860 |
-| Landing page | GitHub Pages | Settings → Pages → `main` / `docs` |
-
-**Free tiers cannot run the 7B model.** The hosted demo runs in demo mode (rule/preprocess/
-canary/taint layers and the playground work without a model; the LLM intent layer is off). The
-headline numbers in [the report](docs/report.md) come from the full local system. Render's free
-service sleeps after inactivity and takes ~1 minute to wake — open it before a demo.
-
-## Run checks## Run checks
+## Run checks## Run checks## Run checks
 
 ```powershell
 python -m pytest

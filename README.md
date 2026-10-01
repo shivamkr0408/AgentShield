@@ -8,6 +8,16 @@ AgentShield is a research prototype for evaluating layered defenses against indi
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full 15-week plan and [docs/literature-summary.md](docs/literature-summary.md) for the Phase 0 literature summary.
 
+## Links
+
+| | |
+|---|---|
+| Source | https://github.com/shivamkr0408/AgentShield |
+| Report | [docs/report/report.md](docs/report/report.md) ([.docx](docs/report/report.docx)) |
+| Paper | [docs/paper/main.tex](docs/paper/main.tex) |
+| Dataset card | [docs/dataset-card.md](docs/dataset-card.md) · [datasheet](docs/DATASHEET.md) · [ethics](docs/ETHICS.md) |
+| Live dashboard / API / demo | set after deploy — see [docs/SUBMISSION.md](docs/SUBMISSION.md) |
+
 ## Status
 
 - Python 3.11+ package (`agents`, `api`, `eval`, `shield`) with development dependencies
@@ -178,3 +188,19 @@ python -m pytest
 ## Frontend
 
 From `web/`, run `npm install` and `npm run dev`. The dev server listens on all interfaces, so a phone on the same network can open it using the URL that Vite prints. Requests to `/api/*` are proxied to the API on port 8000.
+
+## Citation
+
+```bibtex
+@software{agentshield2026,
+  title        = {AgentShield: Provenance-Aware Defense Against Multilingual Prompt Injection in LLM Agents},
+  author       = {[NAME]},
+  year         = {2026},
+  url          = {https://github.com/shivamkr0408/AgentShield},
+  note         = {Final-year project}
+}
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).

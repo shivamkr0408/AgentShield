@@ -40,6 +40,32 @@
       <a class="card" href="#" data-link="video"><b>Demo video →</b><span>YouTube (unlisted)</span></a>
     </div>
 
+    <h2>Architecture</h2>
+    <div class="card" style="padding:18px;overflow-x:auto">
+      <svg viewBox="0 0 820 190" width="100%" style="min-width:620px" role="img" aria-label="AgentShield pipeline">
+        <style>
+          .box{fill:var(--card);stroke:var(--border);stroke-width:1.5;rx:8}
+          .lbl{fill:var(--fg);font:600 13px -apple-system,Segoe UI,sans-serif}
+          .cap{fill:var(--muted);font:600 12px -apple-system,Segoe UI,sans-serif}
+          .ar{stroke:var(--muted);stroke-width:1.5;fill:none;marker-end:url(#a)}
+          .acc{fill:var(--accent)}
+        </style>
+        <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="var(--muted)"/></marker></defs>
+        <text x="10" y="24" class="cap">Content path (what the agent reads)</text>
+        <rect class="box" x="10" y="34" width="120" height="40" rx="8"/><text x="22" y="59" class="lbl">preprocess</text>
+        <rect class="box" x="160" y="34" width="150" height="40" rx="8"/><text x="172" y="59" class="lbl">detectors L1·L2·L3</text>
+        <rect class="box" x="340" y="34" width="90" height="40" rx="8"/><text x="360" y="59" class="lbl">fuse</text>
+        <rect class="box" x="460" y="34" width="190" height="40" rx="8"/><text x="472" y="59" class="lbl">sanitize / allow / block</text>
+        <line class="ar" x1="130" y1="54" x2="158" y2="54"/><line class="ar" x1="310" y1="54" x2="338" y2="54"/><line class="ar" x1="430" y1="54" x2="458" y2="54"/>
+        <text x="10" y="114" class="cap">Action path (what the agent does)</text>
+        <rect class="box" x="10" y="124" width="110" height="40" rx="8"/><text x="30" y="149" class="lbl acc">canary</text>
+        <rect class="box" x="150" y="124" width="120" height="40" rx="8"/><text x="168" y="149" class="lbl acc">taint policy</text>
+        <rect class="box" x="300" y="124" width="150" height="40" rx="8"/><text x="312" y="149" class="lbl">permissions / approval</text>
+        <rect class="box" x="480" y="124" width="150" height="40" rx="8"/><text x="500" y="149" class="lbl">allow / block</text>
+        <line class="ar" x1="120" y1="144" x2="148" y2="144"/><line class="ar" x1="270" y1="144" x2="298" y2="144"/><line class="ar" x1="450" y1="144" x2="478" y2="144"/>
+      </svg>
+    </div>
+
     <h2>What it does</h2>
     <ul>
       <li>A layered defense for tool-using LLM agents: de-obfuscating preprocessor, a three-layer detector (multilingual rules, an xlm-roberta classifier, and an LLM intent check), canary tokens, and origin taint tracking.</li>

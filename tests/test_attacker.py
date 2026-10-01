@@ -85,7 +85,10 @@ def test_benchmark_produces_table_ablation_and_baselines() -> None:
         [Record(text=SEED, label="attack", category="instruction_override", source="seed") for _ in range(4)]
         + [Record(text=f"The revenue grew {i}% last month.", label="benign", category="benign_plain", source="seed") for i in range(4)]
     )
-    summary = run_benchmark(records)
+    # Inject explicit detectors/fuser so the test is independent of any locally trained model.
+    from shield.detectors import RuleDetector
+    from shield.scoring import RiskFuser
+    summary = run_benchmark(records, detectors=[RuleDetector()], fuser=RiskFuser())
 
     assert summary["active_layers"] == ["rules"]
     agentshield = summary["detectors"]["agentshield"]["overall"]

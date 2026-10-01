@@ -59,7 +59,7 @@ Open two things: the dashboard (`http://localhost:8000`) and a terminal.
 
 ## 3:35 – 4:10 — Results
 - **Click:** **Results**.
-> "The numbers: attack-success down from [RESULT] to [RESULT], utility held, false positives low,
+> "The numbers: attack-success down from 100% undefended to 6.5% with AgentShield (0.94 detection), utility held, false positives low,
 > and an ablation showing each layer's contribution. Full results are from the local system; the
 > hosted demo runs a small model."
 

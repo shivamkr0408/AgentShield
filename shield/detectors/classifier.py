@@ -31,6 +31,11 @@ class ClassifierDetector:
         self._try_load()
 
     def _try_load(self) -> None:
+        import os
+
+        if os.getenv("AGENTSHIELD_LOAD_CLASSIFIER", "1").strip().lower() in {"0", "false", "no", "off"}:
+            self._load_error = "classifier loading disabled (AGENTSHIELD_LOAD_CLASSIFIER=0)"
+            return
         if not self.model_dir.exists():
             self._load_error = f"no trained model at {self.model_dir} (run shield.detectors.train_classifier)"
             return

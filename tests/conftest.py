@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import os
+
+# Keep the test suite hermetic and fast: never load a locally trained L2 model (CI has none).
+os.environ.setdefault("AGENTSHIELD_LOAD_CLASSIFIER", "0")
+
 from collections.abc import Iterator
 from typing import Any
 

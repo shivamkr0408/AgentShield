@@ -31,9 +31,11 @@ three-layer detector (multilingual rules, a fine-tuned multilingual classifier, 
 check), canary tokens, and origin-based taint tracking, fused by logistic regression and enforced
 by a policy firewall. We also build a multilingual indirect-injection dataset (English, Hindi,
 Tamil, Hinglish, Tanglish) with benign hard negatives. On a public English injection test set, the
-rule layer with learned fusion attains 0.78 precision at 0.23 recall and 3.6\% false positives at
-$\sim$0.36\,ms per check, exceeding a keyword baseline, with the classifier layer carrying recall
-once trained. Crucially, the provenance layers stop data exfiltration that content detection misses,
+full detector pipeline (rules + a fine-tuned classifier, fused) attains 0.88 precision at 0.94
+recall (6.5\% attack success) and 7.1\% false positives, far exceeding a keyword baseline (0.19
+recall); an ablation confirms the classifier carries recall. Latency is $\sim$70\,ms per check on
+CPU (the classifier), versus $\sim$0.1\,ms for rules alone. Crucially, the provenance layers stop
+data exfiltration that content detection misses,
 and the preprocessor neutralizes obfuscations that evade a keyword filter. We release the code,
 dataset tooling, an SDK, a live dashboard, and a Docker deployment.
 \end{abstract}
@@ -110,8 +112,8 @@ public English injections with the authored negatives: test 87 (31 attack / 56 b
 \section{Experiments}
 Metrics: detection (recall), attack-success rate ($1-$recall), precision, false positives (FPR), and
 latency. Baselines: no defense, a keyword filter, and an open-source classifier (scored on raw
-text). The reported run uses L1 with learned fusion; L2/L3 were inactive (training/Ollama), and
-canary/taint are action-level, shown qualitatively.
+text). The reported run uses L1+L2 with learned fusion (L2 = xlm-roberta-base, 2 epochs); L3 needs Ollama
+and was off; canary/taint are action-level, shown qualitatively.
 
 \section{Results}
 \begin{table}[t]
@@ -124,14 +126,14 @@ Defense & Recall & Attack succ. & FPR & Precision \\
 \midrule
 No defense & 0.00 & 1.00 & 0.00 & -- \\
 Keyword filter & 0.19 & 0.81 & 0.00 & 1.00 \\
-\textbf{AgentShield (L1+fusion)} & \textbf{0.23} & \textbf{0.77} & \textbf{0.036} & \textbf{0.78} \\
+\textbf{AgentShield (L1+L2)} & \textbf{0.94} & \textbf{0.065} & \textbf{0.071} & \textbf{0.88} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:results} shows AgentShield's rule layer exceeds the keyword baseline in recall and F1
-at a comparably low FPR, with latency p50 0.07\,ms / p95 0.36\,ms. Recall is bounded by L2 being
-inactive; L1 is deliberately high-precision.
+Table~\ref{tab:results} shows AgentShield cuts attack success to 6.5\%, a 12$\times$ higher recall
+than the keyword filter, at 0.88 precision and 7.1\% FPR. Latency is p50 70\,ms / p95 159\,ms, dominated
+by the classifier on CPU (rules alone $\sim$0.1\,ms).
 
 \textbf{Provenance result.} The central contribution is independent of detector recall: in the test
 suite, a benign-looking page (no trigger words) drives the agent to email a secret, and the
@@ -140,9 +142,9 @@ fails here. The preprocessor reverses base64/hex/URL/homoglyph obfuscations that
 baseline.
 
 \section{Ablation}
-Removing the (only active) rule layer drops detection to zero. With L2/L3 trained/enabled, the
-harness produces the full per-layer ablation; the canary/taint ablation is action-level and removes
-the exfiltration backstop.
+Removing the classifier drops detection to zero (recall 0.00); removing rules lowers recall to
+0.90 --- the classifier carries recall, the rules add a few points. The canary/taint ablation is
+action-level and removes the exfiltration backstop.
 
 \section{Discussion and Limitations}
 L1 is a precise, low-recall filter; L2 carries recall and L3 resolves ambiguity, while canary/taint

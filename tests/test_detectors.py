@@ -66,7 +66,14 @@ def test_rules_fire_on_a_multilingual_trigger() -> None:
 
 
 def test_classifier_degrades_gracefully_without_a_model(tmp_path) -> None:
-    detector = ClassifierDetector(model_dir=tmp_path / "missing")
+    import os
+
+    # Exercise the real no-model path (conftest disables loading by default).
+    os.environ["AGENTSHIELD_LOAD_CLASSIFIER"] = "1"
+    try:
+        detector = ClassifierDetector(model_dir=tmp_path / "missing")
+    finally:
+        os.environ["AGENTSHIELD_LOAD_CLASSIFIER"] = "0"
     assert detector.available is False
     signal = _score(detector, ATTACK)
     assert signal.score == 0.0 and signal.label == "uncertain" and "no trained model" in signal.reason

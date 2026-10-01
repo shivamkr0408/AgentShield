@@ -82,11 +82,16 @@ def build_content_detectors() -> list[Detector]:
     return detectors
 
 
-def run_benchmark(records: list[Record], threshold: float = 0.5) -> dict[str, Any]:
-    # Use the fusion weights learned on validation data if present (eval.fit_fusion), else the
-    # hand-set defaults.
-    fuser = RiskFuser.load(REPO_ROOT / "models" / "fusion.json")
-    detectors = build_content_detectors()
+def run_benchmark(
+    records: list[Record],
+    threshold: float = 0.5,
+    detectors: list[Detector] | None = None,
+    fuser: RiskFuser | None = None,
+) -> dict[str, Any]:
+    # By default use any learned fusion weights and the available detectors; tests inject their
+    # own to stay hermetic (independent of locally trained artifacts).
+    fuser = fuser or RiskFuser.load(REPO_ROOT / "models" / "fusion.json")
+    detectors = detectors if detectors is not None else build_content_detectors()
     present = [d.name for d in detectors if d.name in CONTENT_LAYERS]
 
     fused_items, latencies = score_fused(records, detectors, fuser)

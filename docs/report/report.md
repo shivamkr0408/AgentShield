@@ -41,9 +41,11 @@ combines a de-obfuscating preprocessor, a three-layer detector (multilingual rul
 multilingual classifier, and an LLM intent check), **canary tokens**, and **origin-based taint
 tracking**, fused by logistic regression and enforced by a policy firewall. We also build a
 multilingual indirect-injection dataset (English, Hindi, Tamil, Hinglish, Tanglish) with benign
-hard negatives. On a public English injection test set, Layer 1 plus fusion reaches **0.78
-precision at 0.23 recall and 3.6% false positives**, outperforming a keyword baseline, with the
-classifier layer (Layer 2) carrying recall once trained; latency is **~0.36 ms per check**. The
+hard negatives. On a public English injection test set, the full detector pipeline (rules + fine-tuned
+classifier, fused) reaches **0.88 precision at 0.94 recall (6.5% attack success) and 7.1% false
+positives**, far exceeding a keyword baseline (0.19 recall); an ablation confirms the classifier
+carries recall (removing it drops detection to zero). Latency is ~70 ms per check on CPU, dominated
+by the classifier, versus ~0.1 ms for the rule layer alone. The
 central qualitative result is reproducible in the test suite: **canary and taint tracking stop
 exfiltration that the content detectors miss**, and the preprocessor neutralizes obfuscations that
 defeat a keyword filter. The system ships as an SDK, a FastAPI backend, a live dashboard, and a
@@ -188,10 +190,10 @@ an open-source injection classifier (scored on raw text). Dataset: the English p
 (§7). Configuration is reproducible with `python -m dataset.build`, `python -m eval.fit_fusion`,
 and `python -m eval.benchmark`.
 
-> **Scope of the numbers below.** They reflect **Layer 1 + fusion** with weights learned on the
-> validation split. Layer 2 (classifier) and Layer 3 (LLM judge) were not active for this run
-> (training/Ollama), and the canary/taint layers act on *actions*, not on this text-classification
-> corpus — their contribution is shown qualitatively (§12.1). The public snapshot is English.
+> **Scope of the numbers below.** They reflect **Layer 1 (rules) + Layer 2 (xlm-roberta,
+> fine-tuned for 2 epochs) with fusion weights learned on the validation split**. Layer 3 (LLM
+> judge) needs Ollama and was off; canary/taint act on *actions*, shown qualitatively (§12.1). The
+> public snapshot is English — multilingual numbers need the human attack set.
 
 ## 12. Results
 
@@ -201,12 +203,13 @@ and `python -m eval.benchmark`.
 |---|---|---|---|---|
 | No defense | 0.00 | 1.00 | 0.00 | — |
 | Keyword filter | 0.19 | 0.81 | 0.00 | 1.00 |
-| **AgentShield (L1 + fusion)** | **0.23** | **0.77** | **0.036** | **0.78** |
+| **AgentShield (L1+L2, fused)** | **0.94** | **0.065** | **0.071** | **0.88** |
 
-Latency: **p50 0.07 ms, p95 0.36 ms** per check — negligible overhead. Per-language (English only in
-this snapshot): recall 0.23. These are modest because the **recall-carrying classifier (L2) is not
-active here**; L1 is deliberately high-precision. The system beats the keyword baseline on recall
-and F1 at a comparable, very low false-positive rate.
+The full pipeline cuts attack success from 100% (undefended) and 81% (keyword) to **6.5%**, at
+0.88 precision and 7.1% false positives — a 12× higher recall than the keyword filter.
+Latency is **p50 70 ms, p95 159 ms** per check, dominated by the xlm-roberta classifier running on
+CPU; the rule layer alone is ~0.1 ms, and a GPU or a cascade (run L2 only when L1 is uncertain)
+brings this down. Per-language is English only in this public snapshot.
 
 ### 12.1 The provenance result (reproducible today)
 
@@ -222,11 +225,17 @@ The headline contribution does not depend on detector recall. In the test suite:
 
 ![Ablation](figures/ablation.png)
 
-Removing Layer 1 (the only active content layer in this run) drops detection to zero, confirming it
-carries the current content signal. The canary and taint ablations are action-level and are shown
-qualitatively in §12.1 (and are exercised by the firewall tests). With L2/L3 trained/enabled, the
-ablation separates the detector layers quantitatively — the harness (`eval/benchmark.py`,
-`--agent`) produces that table directly.
+Leaving one layer out (recall / attack-success):
+
+| Configuration | Detection (recall) | Attack success |
+|---|---|---|
+| Full (L1+L2) | 0.94 | 0.065 |
+| − rules (L2 only) | 0.90 | 0.097 |
+| − classifier (L1 only) | 0.00 | 1.00 |
+
+The classifier carries recall — removing it drops detection to zero — while the rule layer adds a
+few points on top. The canary and taint ablations are action-level (§12.1) and are exercised by the
+firewall tests; the `--agent` harness produces that table on scenarios.
 
 ## 14. Discussion
 

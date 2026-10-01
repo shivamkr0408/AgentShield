@@ -22,11 +22,12 @@ One line per step: status, links, and anything left for you.
 ## Results status
 
 Real numbers are in the report, from `eval/benchmark.py` on a public English injection test set
-(deepset, 87 samples) with **Layer 1 + learned fusion**: precision 0.78, recall 0.23, FPR 0.036,
-ASR 0.77, p95 0.36 ms. **Layer 2 (xlm-roberta) training was started to raise recall**; when it
-completes, `eval.fit_fusion` + `eval.benchmark` + `eval.make_figures` refresh the numbers/figures
-everywhere (report, paper, deck). The multilingual numbers need the human attack set; the public
-ingest is English.
+(deepset, 87 samples) with **Layer 1 + Layer 2 (xlm-roberta, 2 epochs) + learned fusion**:
+**precision 0.88, recall 0.94, F1 0.91, FPR 0.071, attack-success 6.5%** (vs. keyword 0.19 recall /
+81% ASR, and 100% undefended). Ablation: removing the classifier drops recall to 0 (it carries
+recall); removing rules → 0.90. Latency p50 70 ms / p95 159 ms (classifier on CPU; rules alone
+~0.1 ms). Figures regenerated. The multilingual numbers still need the human attack set (the public
+ingest is English); Layer 3 needs Ollama.
 
 ## Repo / CI
 

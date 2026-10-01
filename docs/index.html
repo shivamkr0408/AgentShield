@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgentShield</title>
+  <meta name="description" content="Provenance-aware defense against multilingual prompt injection in LLM agents." />
+  <style>
+    :root { --bg:#f6f7f9; --fg:#1a2233; --muted:#5b6574; --card:#fff; --border:#dce1e8; --accent:#2f6fed; --ok:#1a9c6b; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0e1320; --fg:#e7ecf4; --muted:#9aa6b8; --card:#161c2b; --border:#2a3448; --accent:#5b8cff; --ok:#35c48c; } }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+    .wrap { max-width:860px; margin:0 auto; padding:48px 20px 80px; }
+    h1 { font-size:34px; margin:0 0 6px; }
+    .tag { color:var(--muted); font-size:18px; margin:0 0 28px; }
+    .pill { display:inline-block; background:color-mix(in srgb,var(--ok) 16%,transparent); color:var(--ok); font-weight:700; font-size:13px; padding:3px 12px; border-radius:999px; margin-bottom:24px; }
+    .links { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:24px 0 36px; }
+    a.card { display:block; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; text-decoration:none; color:var(--fg); }
+    a.card:hover { border-color:var(--accent); }
+    a.card b { color:var(--accent); } a.card span { display:block; color:var(--muted); font-size:13px; margin-top:4px; word-break:break-all; }
+    h2 { font-size:20px; margin:32px 0 10px; }
+    ul { padding-left:20px; } li { margin:6px 0; }
+    code { background:var(--card); border:1px solid var(--border); border-radius:6px; padding:1px 6px; font-size:14px; }
+    .note { color:var(--muted); font-size:14px; border-left:3px solid var(--border); padding:6px 14px; margin-top:28px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="pill">v1.0.0</span>
+    <h1>AgentShield 🛡️</h1>
+    <p class="tag">Provenance-aware defense against multilingual prompt injection in LLM agents.</p>
+
+    <div class="links">
+      <a class="card" href="https://github.com/shivamkr0408/AgentShield"><b>Source code →</b><span>github.com/shivamkr0408/AgentShield</span></a>
+      <a class="card" href="https://github.com/shivamkr0408/AgentShield/releases/tag/v1.0.0"><b>Release v1.0.0 →</b><span>tagged release</span></a>
+      <a class="card" href="#" data-link="dashboard"><b>Live dashboard →</b><span>set your Vercel URL</span></a>
+      <a class="card" href="#" data-link="api"><b>Live API / docs →</b><span>set your Render URL + /docs</span></a>
+      <a class="card" href="#" data-link="demo"><b>AI demo →</b><span>Hugging Face Space</span></a>
+      <a class="card" href="#" data-link="dataset"><b>Dataset →</b><span>Hugging Face Datasets</span></a>
+      <a class="card" href="#" data-link="video"><b>Demo video →</b><span>YouTube (unlisted)</span></a>
+    </div>
+
+    <h2>What it does</h2>
+    <ul>
+      <li>A layered defense for tool-using LLM agents: de-obfuscating preprocessor, a three-layer detector (multilingual rules, an xlm-roberta classifier, and an LLM intent check), canary tokens, and origin taint tracking.</li>
+      <li>Signals are fused by logistic regression and enforced by a policy firewall: allow, sanitize, or block, with human approval and a fail-safe timeout.</li>
+      <li>A multilingual indirect-injection dataset (English, Hindi, Tamil, Hinglish, Tanglish) with benign hard negatives.</li>
+    </ul>
+
+    <h2>Key findings</h2>
+    <ul>
+      <li>Canary and taint tracking catch exfiltration that content detectors miss — a benign-looking page that drives the agent to email a secret is stopped by the tripwire, not by any trigger word.</li>
+      <li>The preprocessor neutralizes obfuscations (base64, hex, URL-encoding, homoglyphs) that evade a keyword baseline.</li>
+    </ul>
+
+    <h2>Run it locally</h2>
+    <p><code>docker compose up --build</code> — then open the dashboard. See the repo README for details.</p>
+
+    <p class="note">The free hosted demo runs a small model or demo mode. The headline results in the report come from the full local system. Replace the placeholder links above with your deployed URLs.</p>
+  </div>
+</body>
+</html>

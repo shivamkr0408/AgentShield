@@ -2,6 +2,8 @@
 
 **Provenance-Aware Defense Against Multilingual Prompt Injection in LLM Agents**
 
+[![CI](https://github.com/shivamkr0408/AgentShield/actions/workflows/ci.yml/badge.svg)](https://github.com/shivamkr0408/AgentShield/actions/workflows/ci.yml)
+
 AgentShield is a research prototype for evaluating layered defenses against indirect and multilingual prompt injection. The planned system combines provenance-aware preprocessing, detectors, canary tokens, taint tracking, a policy firewall, an adaptive attacker, and a live evaluation dashboard.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full 15-week plan and [docs/literature-summary.md](docs/literature-summary.md) for the Phase 0 literature summary.
@@ -153,6 +155,26 @@ docker compose exec ollama ollama pull qwen2.5:7b    # once
 ```
 
 The dashboard is at `http://localhost:8080`, the API at `http://localhost:8000/docs`.
+
+## Hosting
+
+The repo is wired for free hosting. The dashboard reads the API address from `VITE_API_URL`,
+the API honors `ALLOWED_ORIGINS` (CORS) and `$PORT`, and `DEMO_MODE=true` seeds one real
+illustrative incident so a hosted instance is not empty. Config files: `render.yaml` (API),
+`web/vercel.json` (dashboard), `spaces/huggingface/` (an all-in-one demo Space), and `docs/`
+(a GitHub Pages landing page).
+
+| What | Where | Notes |
+|---|---|---|
+| Dashboard | Vercel | root `web/`, set `VITE_API_URL` to the API URL |
+| API | Render | Docker (`Dockerfile.api`), `DEMO_MODE=true`, `ALLOWED_ORIGINS=<dashboard URL>` |
+| All-in-one demo | Hugging Face Space | Docker SDK, clones the repo, port 7860 |
+| Landing page | GitHub Pages | Settings → Pages → `main` / `docs` |
+
+**Free tiers cannot run the 7B model.** The hosted demo runs in demo mode (rule/preprocess/
+canary/taint layers and the playground work without a model; the LLM intent layer is off). The
+headline numbers in [the report](docs/report.md) come from the full local system. Render's free
+service sleeps after inactivity and takes ~1 minute to wake — open it before a demo.
 
 ## Run checks## Run checks
 

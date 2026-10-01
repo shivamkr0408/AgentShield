@@ -1,8 +1,11 @@
-// REST helpers and a reconnecting WebSocket client. Same-origin in production (FastAPI serves
-// the built dashboard); the Vite dev proxy forwards these paths to the API on :8000.
+// REST helpers and a reconnecting WebSocket client.
+// - Same-origin by default (FastAPI serves the dashboard; nginx proxies it).
+// - When the dashboard is hosted apart from the API (e.g. Vercel + Render), set VITE_API_URL
+//   to the API's base URL; requests and the WebSocket (wss://) are routed there.
+const BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 async function request(path, options) {
-  const response = await fetch(path, {
+  const response = await fetch(`${BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
@@ -32,8 +35,14 @@ export function connectEvents(onEvent, onStatus) {
   let delay = 1000;
 
   const open = () => {
-    const scheme = location.protocol === "https:" ? "wss" : "ws";
-    socket = new WebSocket(`${scheme}://${location.host}/ws/events`);
+    let url;
+    if (BASE) {
+      url = `${BASE.replace(/^http/, "ws")}/ws/events`; // https -> wss, http -> ws
+    } else {
+      const scheme = location.protocol === "https:" ? "wss" : "ws";
+      url = `${scheme}://${location.host}/ws/events`;
+    }
+    socket = new WebSocket(url);
     onStatus?.("connecting");
     socket.onopen = () => {
       delay = 1000;

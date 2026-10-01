@@ -24,21 +24,28 @@ from api.service import ShieldService
 WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"
 
 
-def create_app(db_url: str | None = None, judge=None) -> FastAPI:
+def create_app(db_url: str | None = None, judge=None, demo: bool | None = None) -> FastAPI:
     app = FastAPI(
         title="AgentShield API",
         version="0.2.0",
         description="Provenance-aware defense against multilingual prompt injection: live scanning, "
         "action checks, incidents, approvals, policy, and a decision stream.",
     )
-    app.add_middleware(
-        CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
-    )
+    # Restrict to the dashboard's origin(s) in production via ALLOWED_ORIGINS (comma-separated).
+    raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
+    origins = ["*"] if raw_origins.strip() == "*" else [o.strip() for o in raw_origins.split(",") if o.strip()]
+    app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"])
+
     url = db_url or os.getenv("AGENTSHIELD_DB_URL", "sqlite:///agentshield.db")
     service = ShieldService(make_sessionmaker(url), judge=judge)
     bus = EventBus()
     app.state.service = service
     app.state.bus = bus
+
+    if demo is None:
+        demo = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+    if demo:
+        service.seed_demo()
 
     async def broadcast(event: dict) -> None:
         await bus.publish(event)

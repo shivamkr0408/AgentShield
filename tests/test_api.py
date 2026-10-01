@@ -102,6 +102,17 @@ def test_websocket_receives_live_events(client: TestClient) -> None:
         assert event["type"] == "scan" and event["outcome"] in {"sanitize", "block"}
 
 
+def test_demo_mode_seeds_a_real_illustrative_incident() -> None:
+    client = TestClient(create_app(db_url="sqlite://", demo=True))
+    incidents = client.get("/incidents").json()
+    assert len(incidents) == 1
+    stats = client.get("/stats").json()
+    # The seeded exfil attempt was blocked; the demo incident has events.
+    assert stats["blocked"] >= 1 and stats["events"] >= 3
+    replay = client.get(f"/incidents/{incidents[0]['id']}").json()
+    assert any(e["outcome"] == "block" for e in replay["events"])
+
+
 def test_sdk_wrap_enforces_the_firewall() -> None:
     from agents.agent import run_agent
     from agents.sandbox import Sandbox

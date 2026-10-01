@@ -1,0 +1,18 @@
+# One-click Render setup for the AgentShield API (free Docker web service).
+# In Render: New -> Blueprint -> pick the repo, or New -> Web Service -> Docker.
+services:
+  - type: web
+    name: agentshield-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.api
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      # Set this to your Vercel dashboard URL after it deploys (comma-separated for several).
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      # Free instances have an ephemeral disk; keep the demo database in /tmp.
+      - key: AGENTSHIELD_DB_URL
+        value: "sqlite:////tmp/agentshield.db"

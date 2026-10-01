@@ -20,8 +20,10 @@ services:
       dockerfile: Dockerfile.api
     environment:
       AGENTSHIELD_MODEL_URL: http://ollama:11434
-      AGENTSHIELD_MODEL_NAME: qwen2.5:7b
+      AGENTSHIELD_MODEL_NAME: ${AGENTSHIELD_MODEL_NAME:-qwen2.5:7b}
       AGENTSHIELD_DB_URL: sqlite:////state/agentshield.db
+      DEMO_MODE: ${DEMO_MODE:-false}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     volumes:
       - state:/state
     depends_on:

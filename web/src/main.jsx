@@ -33,6 +33,7 @@ function App() {
   const [approvals, setApprovals] = useState([]);
   const [policy, setPolicy] = useState({});
   const [status, setStatus] = useState("connecting");
+  const [demo, setDemo] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [theme, setTheme] = useTheme();
   const toastId = useRef(0);
@@ -51,6 +52,7 @@ function App() {
     refreshStats();
     refreshApprovals();
     api.policy().then(setPolicy).catch(() => {});
+    api.config().then((c) => setDemo(!!c.demo)).catch(() => {});
   }, [refreshStats, refreshApprovals]);
 
   useEffect(() => {
@@ -95,6 +97,7 @@ function App() {
       <div className="main">
         <header className="topbar">
           <h1>{page.label}</h1>
+          {demo ? <span className="badge warn" title="Running a small model or recorded data; full results are from the local system">Demo mode</span> : null}
           <span className="spacer" />
           <span className={`badge ${status === "connected" ? "ok" : status === "connecting" ? "warn" : "danger"}`}>
             <span className="dotpulse" /> {status}

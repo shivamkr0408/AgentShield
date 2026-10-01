@@ -102,6 +102,11 @@ def test_websocket_receives_live_events(client: TestClient) -> None:
         assert event["type"] == "scan" and event["outcome"] in {"sanitize", "block"}
 
 
+def test_config_reports_demo_mode() -> None:
+    assert TestClient(create_app(db_url="sqlite://")).get("/config").json()["demo"] is False
+    assert TestClient(create_app(db_url="sqlite://", demo=True)).get("/config").json()["demo"] is True
+
+
 def test_demo_mode_seeds_a_real_illustrative_incident() -> None:
     client = TestClient(create_app(db_url="sqlite://", demo=True))
     incidents = client.get("/incidents").json()

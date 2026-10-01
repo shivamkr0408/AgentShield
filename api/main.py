@@ -44,6 +44,7 @@ def create_app(db_url: str | None = None, judge=None, demo: bool | None = None) 
 
     if demo is None:
         demo = os.getenv("DEMO_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+    service.demo = bool(demo)
     if demo:
         service.seed_demo()
 
@@ -53,6 +54,11 @@ def create_app(db_url: str | None = None, judge=None, demo: bool | None = None) 
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok", "service": "agentshield", "phase": "api"}
+
+    @app.get("/config")
+    def config() -> dict:
+        # The dashboard reads this to show a "Demo mode" badge on hosted/demo instances.
+        return {"demo": bool(getattr(service, "demo", False)), "version": app.version}
 
     @app.post("/scan")
     async def scan(request: ScanRequest) -> dict:

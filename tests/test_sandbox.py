@@ -25,7 +25,10 @@ def test_sandbox_directory_is_removed_on_close() -> None:
     assert not root.exists()
 
 
-@pytest.mark.parametrize("path", ["../manifest.json", "../../inbox.json", "docs/../../site/index.html", "C:/Windows/win.ini"])
+# Traversal via ".." escapes on every OS. (A leading "/" is treated as workspace-relative by
+# design — see the next test — and a Windows drive like "C:/" only escapes on Windows, so it is
+# not used here.)
+@pytest.mark.parametrize("path", ["../manifest.json", "../../inbox.json", "docs/../../site/index.html", "../../../etc/passwd"])
 def test_file_access_is_confined_to_the_workspace(sandbox: Sandbox, path: str) -> None:
     with pytest.raises(SandboxError):
         sandbox.resolve_file(path)

@@ -14,6 +14,7 @@ async function request(path, options) {
 }
 
 export const api = {
+  config: () => request("/config"),
   stats: () => request("/stats"),
   events: (limit = 60) => request(`/events?limit=${limit}`),
   incidents: () => request("/incidents"),

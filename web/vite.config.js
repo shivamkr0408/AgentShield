@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 // paths (and the WebSocket) so the browser talks to one origin, as it does in production
 // where FastAPI serves the built dashboard.
 const API = "http://localhost:8000";
-const apiPaths = ["/scan", "/check_action", "/incidents", "/events", "/approvals", "/policy", "/stats", "/results", "/health"];
+const apiPaths = ["/scan", "/check_action", "/incidents", "/events", "/approvals", "/policy", "/stats", "/results", "/config", "/health"];
 
 export default defineConfig({
   plugins: [react()],

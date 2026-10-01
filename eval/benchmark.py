@@ -83,7 +83,9 @@ def build_content_detectors() -> list[Detector]:
 
 
 def run_benchmark(records: list[Record], threshold: float = 0.5) -> dict[str, Any]:
-    fuser = RiskFuser()
+    # Use the fusion weights learned on validation data if present (eval.fit_fusion), else the
+    # hand-set defaults.
+    fuser = RiskFuser.load(REPO_ROOT / "models" / "fusion.json")
     detectors = build_content_detectors()
     present = [d.name for d in detectors if d.name in CONTENT_LAYERS]
 

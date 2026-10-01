@@ -30,6 +30,7 @@ ml = [
     "transformers>=4.44",
     "datasets>=2.20",
     "numpy>=1.26",
+    "matplotlib>=3.8",
 ]
 # OCR for images and PDF pages (also needs the Tesseract binary, and Poppler for PDFs).
 ocr = [

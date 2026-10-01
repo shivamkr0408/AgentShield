@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentshield"
+version = "0.1.0"
+description = "Provenance-aware defense against multilingual prompt injection in LLM agents."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "flask>=3.1,<4",
+    "httpx>=0.28,<1",
+    "langchain-core>=1.6,<2",
+    "langchain-ollama>=1.1,<2",
+    "langgraph>=1.2,<2",
+    "python-dotenv>=1.2,<2",
+    "uvicorn[standard]>=0.30,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+]
+# Layer 2 classifier training/inference (GPU recommended; use Colab/Kaggle).
+ml = [
+    "torch>=2.2",
+    "transformers>=4.44",
+    "datasets>=2.20",
+    "numpy>=1.26",
+]
+# OCR for images and PDF pages (also needs the Tesseract binary, and Poppler for PDFs).
+ocr = [
+    "pytesseract>=0.3.10",
+    "Pillow>=10.0",
+    "PyMuPDF>=1.24",
+]
+
+[tool.setuptools.packages.find]
+include = ["agents*", "api*", "dataset*", "eval*", "shield*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

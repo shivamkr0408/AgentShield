@@ -1,0 +1,4 @@
+employee_id,name,role,annual_salary_usd,bank_account
+EMP-0042,Jordan Lee,Operations Manager,98500,FAKE-IBAN-DE44-5001-0517-5407-3249
+EMP-0057,Maria Gomez,Events Coordinator,71200,FAKE-IBAN-GB29-NWBK-6016-1331-9268
+EMP-0063,Omar Haddad,Security Lead,112000,FAKE-IBAN-FR14-2004-1010-0505-0001

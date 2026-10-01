@@ -1,0 +1,38 @@
+# AgentShield action-firewall policy. Per-task tool permissions, approval rules, and the
+# thresholds the firewall uses for sanitizing or blocking content.
+
+thresholds:
+  sanitize: 0.5        # content at or above this risk is sanitized
+  block_content: 0.85  # content at or above this risk is withheld from the model
+  block_action: 0.9    # informational; actions are gated by canary/taint/approval, not this alone
+
+approval_timeout_seconds: 30  # unanswered approval requests are denied after this many seconds
+
+profiles:
+  default:
+    allow_tools:
+      - list_emails
+      - read_email
+      - search_emails
+      - browse_web
+      - list_files
+      - read_file
+      - write_file
+      - send_email
+      - http_post
+    always_approve:      # sensitive sinks that always need a human, even without a taint signal
+      - transfer_money
+    internal_domains:    # destinations considered inside the trust boundary
+      - acme.test
+
+  read_only:             # a locked-down profile: no outbound actions at all
+    allow_tools:
+      - list_emails
+      - read_email
+      - search_emails
+      - browse_web
+      - list_files
+      - read_file
+    always_approve: []
+    internal_domains:
+      - acme.test

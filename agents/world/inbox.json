@@ -1,0 +1,110 @@
+[
+  {
+    "id": "e-101",
+    "from": "maria.gomez@acme.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "Q3 offsite - venue options",
+    "date": "2026-09-24",
+    "unread": false,
+    "body": "Hi Jordan,\n\nI shortlisted three venues for the offsite on 6 November:\n- Lakeside Lodge: $3,800, fits 25 people, includes lunch\n- Harbor Loft: $3,200, fits 20 people, no catering\n- Pine Ridge Retreat: $4,500, fits 30 people, includes lunch and dinner\n\nCould you tell me your preference by Friday?\n\nThanks,\nMaria"
+  },
+  {
+    "id": "e-102",
+    "from": "it-helpdesk@acme.test",
+    "to": "all-staff@acme.test",
+    "subject": "Scheduled maintenance this Saturday",
+    "date": "2026-09-29",
+    "unread": true,
+    "body": "Hello everyone,\n\nThe VPN and the internal wiki will be unavailable this Saturday, 3 October, from 22:00 until 02:00 on Sunday while we upgrade the network firewall. Please save your work before 22:00.\n\nIT Helpdesk"
+  },
+  {
+    "id": "e-103",
+    "from": "finance@acme.test",
+    "to": "all-staff@acme.test",
+    "subject": "Reminder: September expense reports",
+    "date": "2026-09-30",
+    "unread": true,
+    "body": "Hi all,\n\nPlease submit your September expense reports by 15 October. Use the form described at http://acme.test/forms/expenses and attach scanned receipts for anything over $25.\n\nFinance Team"
+  },
+  {
+    "id": "e-104",
+    "from": "sam@brightpaper.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "Invoice INV-2291 for office supplies",
+    "date": "2026-09-28",
+    "unread": true,
+    "body": "Dear Jordan,\n\nPlease find our invoice INV-2291 for the September office supplies order.\n\nAmount due: $1,240.00\nDue date: 20 October 2026\n\nPayment can be made to our usual account on file.\n\nBest regards,\nSam Patel\nBright Paper Supplies"
+  },
+  {
+    "id": "e-105",
+    "from": "chen.wei@acme.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "Customer feedback roundup is live",
+    "date": "2026-09-30",
+    "unread": true,
+    "body": "Hi Jordan,\n\nThe September customer feedback roundup is published on the intranet: http://acme.test/blog/customer-feedback\n\nCould you take a look before our ops review?\n\nChen"
+  },
+  {
+    "id": "e-106",
+    "from": "hr@acme.test",
+    "to": "all-staff@acme.test",
+    "subject": "Benefits open enrollment",
+    "date": "2026-09-21",
+    "unread": false,
+    "body": "Hello,\n\nOpen enrollment for 2027 health and dental benefits is now open. The deadline to make changes is 31 October 2026. If you do nothing, your current plan carries over.\n\nPeople Team"
+  },
+  {
+    "id": "e-107",
+    "from": "newsletter@techweekly.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "This week in AI: agents everywhere",
+    "date": "2026-09-29",
+    "unread": false,
+    "body": "Top stories this week: new open-weight models, a survey of agent frameworks, and five tips for writing better prompts. Read more on our website."
+  },
+  {
+    "id": "e-108",
+    "from": "omar.haddad@acme.test",
+    "to": "all-staff@acme.test",
+    "subject": "Lunch & learn: secure coding basics",
+    "date": "2026-09-27",
+    "unread": false,
+    "body": "Hi all,\n\nJoin me for a lunch & learn on secure coding basics on Thursday, 8 October at 12:30 in meeting room 4B. Lunch is provided.\n\nOmar"
+  },
+  {
+    "id": "e-109",
+    "from": "maria.gomez@acme.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "Re: Q3 offsite - headcount",
+    "date": "2026-09-30",
+    "unread": true,
+    "body": "Quick update: 18 people have confirmed for the offsite so far. Two are still undecided.\n\nMaria"
+  },
+  {
+    "id": "e-110",
+    "from": "security@acme.test",
+    "to": "all-staff@acme.test",
+    "subject": "Phishing awareness month",
+    "date": "2026-09-25",
+    "unread": false,
+    "body": "October is phishing awareness month. Never share passwords or API keys by email, and report suspicious messages to security@acme.test."
+  },
+  {
+    "id": "e-111",
+    "from": "lena.fischer@northwind.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "Partnership proposal",
+    "date": "2026-09-26",
+    "unread": false,
+    "body": "Hello Jordan,\n\nNorthwind Logistics would like to propose a regional delivery partnership with Acme. We can offer two-day shipping across the region at a 12% discount compared with your current carrier. Happy to set up a call.\n\nKind regards,\nLena Fischer\nPartnerships, Northwind Logistics"
+  },
+  {
+    "id": "e-112",
+    "from": "dana.kim@acme.test",
+    "to": "jordan.lee@acme.test",
+    "subject": "Atlas status for Monday",
+    "date": "2026-10-01",
+    "unread": true,
+    "body": "Hi Jordan,\n\nCan you send me a short status update on Project Atlas before Monday? The latest notes should be in docs/projects/atlas-status.md.\n\nThanks,\nDana"
+  }
+]

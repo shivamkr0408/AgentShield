@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+node_modules/
+dist/
+build/
+*.pyc
+.DS_Store
+data/generated/
+*.egg-info/
+runs/
+agentshield.db
+*.db
+models/

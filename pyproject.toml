@@ -33,6 +33,11 @@ ml = [
     "matplotlib>=3.8",
 ]
 # OCR for images and PDF pages (also needs the Tesseract binary, and Poppler for PDFs).
+report = [
+    "python-docx>=1.1",
+    "python-pptx>=0.6",
+    "matplotlib>=3.8",
+]
 ocr = [
     "pytesseract>=0.3.10",
     "Pillow>=10.0",

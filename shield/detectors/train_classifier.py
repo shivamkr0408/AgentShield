@@ -79,7 +79,12 @@ def main() -> None:
         metric_for_best_model="eval_loss",
         logging_steps=50,
     )
-    trainer = Trainer(model=model, args=training_args, train_dataset=train_ds, eval_dataset=val_ds, tokenizer=tokenizer)
+    # transformers >= 4.46 / 5.x renamed Trainer's `tokenizer` arg to `processing_class`.
+    trainer_kwargs = {"model": model, "args": training_args, "train_dataset": train_ds, "eval_dataset": val_ds}
+    try:
+        trainer = Trainer(**trainer_kwargs, processing_class=tokenizer)
+    except TypeError:
+        trainer = Trainer(**trainer_kwargs, tokenizer=tokenizer)
     trainer.train()
 
     args.out.mkdir(parents=True, exist_ok=True)

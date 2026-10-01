@@ -27,7 +27,7 @@ dev = [
 # Layer 2 classifier training/inference (GPU recommended; use Colab/Kaggle).
 ml = [
     "torch>=2.2",
-    "transformers>=4.44",
+    "transformers>=4.46",
     "datasets>=2.20",
     "numpy>=1.26",
     "matplotlib>=3.8",

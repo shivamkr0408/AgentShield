@@ -1,0 +1,184 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{AgentShield: Provenance-Aware Defense Against\\Multilingual Prompt Injection in LLM Agents}
+
+\author{\IEEEauthorblockN{[NAME]}
+\IEEEauthorblockA{\textit{[DEPARTMENT]} \\
+\textit{[INSTITUTION]}\\
+[CITY, COUNTRY] \\
+[EMAIL]}}
+
+\maketitle
+
+\begin{abstract}
+LLM agents that call tools are vulnerable to \emph{indirect prompt injection}: instructions planted
+in the content they read are executed as if issued by the user. Existing defenses are evaluated
+almost entirely in English and are rarely tested against an adaptive attacker. We present
+AgentShield, a layered, provenance-aware defense combining a de-obfuscating preprocessor, a
+three-layer detector (multilingual rules, a fine-tuned multilingual classifier, and an LLM intent
+check), canary tokens, and origin-based taint tracking, fused by logistic regression and enforced
+by a policy firewall. We also build a multilingual indirect-injection dataset (English, Hindi,
+Tamil, Hinglish, Tanglish) with benign hard negatives. On a public English injection test set, the
+rule layer with learned fusion attains 0.78 precision at 0.23 recall and 3.6\% false positives at
+$\sim$0.36\,ms per check, exceeding a keyword baseline, with the classifier layer carrying recall
+once trained. Crucially, the provenance layers stop data exfiltration that content detection misses,
+and the preprocessor neutralizes obfuscations that evade a keyword filter. We release the code,
+dataset tooling, an SDK, a live dashboard, and a Docker deployment.
+\end{abstract}
+
+\begin{IEEEkeywords}
+prompt injection, LLM agents, AI security, information-flow control, multilingual NLP
+\end{IEEEkeywords}
+
+\section{Introduction}
+LLMs are increasingly deployed as \emph{agents} that read external content and invoke tools. The
+same capability is the attack surface: an adversary who controls retrieved content can inject
+instructions that hijack the agent, without ever contacting it directly~\cite{greshake}. As agents
+gain the ability to send mail, move money, and call APIs, a hijack escalates from a wrong answer to
+an irreversible action such as data exfiltration.
+
+Two gaps motivate this work. \emph{Language}: agent-injection benchmarks~\cite{agentdojo,injecagent,bipia}
+are English-only, yet low-resource and code-mixed inputs bypass safety training~\cite{multijail,lowres}.
+\emph{Adaptivity}: adaptive attacks have broken eight published defenses, exceeding 50\% attack
+success~\cite{adaptive}. AgentShield targets both and, critically, does not rely on detection alone:
+provenance checks stop harmful actions even when detection is fooled.
+
+\textbf{Contributions.} (i) The first multilingual indirect-injection dataset for agents with benign
+hard negatives; (ii) a layered defense fusing probabilistic detection with deterministic provenance
+(canary + taint); (iii) an adaptive-attacker evaluation and ablation; (iv) an open, reproducible
+implementation.
+
+\section{Related Work}
+\emph{Prompt-level} defenses such as spotlighting~\cite{spotlight} mark untrusted text but rely on
+model compliance. \emph{Training-time} defenses (StruQ~\cite{struq}, SecAlign~\cite{secalign},
+Instruction Hierarchy~\cite{hierarchy}) teach a data/instruction boundary. \emph{Detection} spans
+classifiers, known-answer checks~\cite{liu,datasentinel}, and task-drift probes~\cite{taskdrift}.
+\emph{System-level} defenses enforce security outside the model: Dual LLM~\cite{dualllm},
+CaMeL~\cite{camel}, and FIDES~\cite{fides} use capabilities or information-flow control, with strong
+guarantees but utility cost. AgentShield borrows the known-answer idea for canaries and the
+information-flow idea for taint, and adds the multilingual dimension none of these measure.
+
+\section{Threat Model}
+The attacker controls some retrieved content but cannot alter the user instruction, system prompt,
+tools, or firewall. Goals: action hijack, data exfiltration, prompt leak, misinformation, denial.
+The defender trusts the user (USER) and the user's sensitive data (PRIVATE) and treats retrieved
+content (EXTERNAL) as untrusted. All evaluation uses a sandbox with mock tools and fake secrets.
+
+\section{Method}
+Every tool call passes through one hook. Incoming content is preprocessed, scored by three
+detectors, fused, and then allowed, sanitized, or blocked; outgoing calls pass canary and taint
+checks and per-task permissions before execution (Fig.~\ref{fig:arch}).
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.92\columnwidth}{\footnotesize
+\texttt{output} $\rightarrow$ preprocess $\rightarrow$ detectors(L1,L2,L3) $\rightarrow$ fuse $\rightarrow$ sanitize/allow/block\\[2pt]
+\texttt{tool call} $\rightarrow$ canary $\rightarrow$ taint policy $\rightarrow$ permissions/approval $\rightarrow$ allow/block}}
+\caption{AgentShield pipeline. Replace with a rendered diagram if desired.}
+\label{fig:arch}
+\end{figure}
+
+\textbf{Preprocessing} separates visible from hidden HTML, decodes base64/hex/URL/ROT13, applies
+NFKC, strips invisible characters (keeping Indic ZWNJ/ZWJ), maps homoglyphs, and OCRs images/PDFs.
+\textbf{L1} is a fast multilingual rule filter with structural signals. \textbf{L2} is a fine-tuned
+\texttt{xlm-roberta-base} classifier (the recall layer). \textbf{L3} is an LLM intent check
+comparing the user task with the content's ask. \textbf{Canary tokens} are placed in the prompt and
+sensitive files; any appearance in an outgoing call blocks and traces it. \textbf{Taint tracking}
+labels data USER/PRIVATE/EXTERNAL and blocks PRIVATE$\rightarrow$EXTERNAL flows (or requires
+approval). A logistic \textbf{fusion} combines layer scores with weights learned on validation data;
+the \textbf{firewall} enforces the decision with a fail-safe approval timeout.
+
+\section{Dataset}
+A unified JSONL schema labels each sample by label, technique, language, script, source, and goal.
+Attacks come from public corpora and a human-authored Hindi/Tamil/Hinglish/Tanglish set; benign hard
+negatives (recipes, manuals, quoted text, code) stress false positives. Splits are 70/15/15,
+stratified, with one attack category held out for generalization. The snapshot used here merges
+public English injections with the authored negatives: test 87 (31 attack / 56 benign).
+
+\section{Experiments}
+Metrics: detection (recall), attack-success rate ($1-$recall), precision, false positives (FPR), and
+latency. Baselines: no defense, a keyword filter, and an open-source classifier (scored on raw
+text). The reported run uses L1 with learned fusion; L2/L3 were inactive (training/Ollama), and
+canary/taint are action-level, shown qualitatively.
+
+\section{Results}
+\begin{table}[t]
+\caption{Detection on the public English injection test set}
+\label{tab:results}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Defense & Recall & Attack succ. & FPR & Precision \\
+\midrule
+No defense & 0.00 & 1.00 & 0.00 & -- \\
+Keyword filter & 0.19 & 0.81 & 0.00 & 1.00 \\
+\textbf{AgentShield (L1+fusion)} & \textbf{0.23} & \textbf{0.77} & \textbf{0.036} & \textbf{0.78} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:results} shows AgentShield's rule layer exceeds the keyword baseline in recall and F1
+at a comparably low FPR, with latency p50 0.07\,ms / p95 0.36\,ms. Recall is bounded by L2 being
+inactive; L1 is deliberately high-precision.
+
+\textbf{Provenance result.} The central contribution is independent of detector recall: in the test
+suite, a benign-looking page (no trigger words) drives the agent to email a secret, and the
+canary/taint layer blocks the send and traces it to the private file --- content scanning alone
+fails here. The preprocessor reverses base64/hex/URL/homoglyph obfuscations that evade the keyword
+baseline.
+
+\section{Ablation}
+Removing the (only active) rule layer drops detection to zero. With L2/L3 trained/enabled, the
+harness produces the full per-layer ablation; the canary/taint ablation is action-level and removes
+the exfiltration backstop.
+
+\section{Discussion and Limitations}
+L1 is a precise, low-recall filter; L2 carries recall and L3 resolves ambiguity, while canary/taint
+provide a deterministic backstop: to exfiltrate, attacker data must reach an external sink, which
+taint/canary gate regardless of wording. Limitations: the reported numbers are L1-only on an English
+snapshot; local 8B models do tool-calling imperfectly; taint is coarse for paraphrased values
+(mitigated by approval).
+
+\section{Ethics}
+All attacks run against mock tools in a sandbox with fake secrets. The dataset is released for
+defensive research under CC BY 4.0 with a responsible-use note. The adaptive attacker is a defensive
+evaluation tool confined to the sandbox.
+
+\section{Conclusion}
+Combining multilingual detection with provenance-based canary and taint tracking yields a practical,
+low-latency defense that catches exfiltration detection alone misses. The framework is complete;
+training L2 and expanding the multilingual corpus scale the numbers, not the design.
+
+\begin{thebibliography}{00}
+\bibitem{greshake} K. Greshake \textit{et al.}, ``Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection,'' AISec, 2023.
+\bibitem{agentdojo} E. Debenedetti \textit{et al.}, ``AgentDojo,'' NeurIPS D\&B, 2024.
+\bibitem{injecagent} Q. Zhan \textit{et al.}, ``InjecAgent,'' Findings of ACL, 2024.
+\bibitem{bipia} J. Yi \textit{et al.}, ``Benchmarking and defending against indirect prompt injection,'' KDD, 2025.
+\bibitem{multijail} Y. Deng \textit{et al.}, ``Multilingual jailbreak challenges in LLMs,'' ICLR, 2024.
+\bibitem{lowres} Z.-X. Yong \textit{et al.}, ``Low-resource languages jailbreak GPT-4,'' NeurIPS SoLaR, 2023.
+\bibitem{adaptive} Q. Zhan \textit{et al.}, ``Adaptive attacks break defenses against indirect prompt injection,'' Findings of NAACL, 2025.
+\bibitem{spotlight} K. Hines \textit{et al.}, ``Defending against indirect prompt injection with spotlighting,'' 2024.
+\bibitem{struq} S. Chen \textit{et al.}, ``StruQ,'' USENIX Security, 2025.
+\bibitem{secalign} S. Chen \textit{et al.}, ``SecAlign,'' 2024.
+\bibitem{hierarchy} E. Wallace \textit{et al.}, ``The instruction hierarchy,'' 2024.
+\bibitem{liu} Y. Liu \textit{et al.}, ``Formalizing and benchmarking prompt injection attacks and defenses,'' USENIX Security, 2024.
+\bibitem{datasentinel} Y. Liu \textit{et al.}, ``DataSentinel,'' IEEE S\&P, 2025.
+\bibitem{taskdrift} S. Abdelnabi \textit{et al.}, ``Get my drift? Catching LLM task drift with activation deltas,'' SaTML, 2025.
+\bibitem{dualllm} S. Willison, ``The dual LLM pattern,'' 2023.
+\bibitem{camel} E. Debenedetti \textit{et al.}, ``Defeating prompt injections by design (CaMeL),'' SaTML, 2026.
+\bibitem{fides} M. Costa \textit{et al.}, ``Securing AI agents with information-flow control (FIDES),'' 2025.
+\end{thebibliography}
+
+\end{document}

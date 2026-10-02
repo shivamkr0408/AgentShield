@@ -14,7 +14,7 @@ Everything needed for submission, in one place.
 | API docs | `[RENDER URL]`/docs |
 | AI demo (HF Space) | `[SET AFTER HF DEPLOY]` e.g. https://huggingface.co/spaces/shivamkr0408/AgentShield |
 | Dataset | `[SET AFTER HF UPLOAD]` e.g. https://huggingface.co/datasets/shivamkr0408/agentshield-multilingual-injection |
-| Project site (Pages) | `[AFTER ENABLING]` https://shivamkr0408.github.io/AgentShield |
+| Project site (Pages) | ✅ **https://shivamkr0408.github.io/AgentShield/** (live) |
 | Demo video | `[YOUR YOUTUBE LINK]` |
 
 ## Submission files (in the repo)
@@ -53,5 +53,6 @@ Everything needed for submission, in one place.
 - [ ] Every live link opens on mobile data (not just your Wi-Fi).
 - [ ] No secrets in the repo or its history (only `…FAKE…` sandbox placeholders).
 - [ ] README states which results are from the full local system vs. the live demo.
-- [ ] Repo is public (required for the HF Space to clone) or shared with examiners.
+- [x] Repo is public (verified) — HF Space can clone it.
+- [x] GitHub Pages enabled and live.
 - [ ] CI is green on `main`.

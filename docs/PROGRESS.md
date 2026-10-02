@@ -9,7 +9,7 @@ One line per step: status, links, and anything left for you.
 | 3. Prepare for hosting | ✅ done | `VITE_API_URL`+`wss://`, `ALLOWED_ORIGINS`+`$PORT`+`DEMO_MODE`, **Demo-mode badge** via `/config`, `render.yaml`, `web/vercel.json`, `spaces/huggingface/`, `WEB_PORT`. |
 | 4. Deploy API (Render) | ⛔ you | Needs your Render account. Instructions in chat. |
 | 5. Deploy dashboard (Vercel) | ⛔ you | Needs your Vercel account. Instructions in chat. |
-| 6. GitHub Pages site | ✅ built / ⛔ enable | `docs/index.html` with architecture diagram + link buttons. Enable: Settings → Pages → `main` / `docs`, then fill the placeholder links. |
+| 6. GitHub Pages site | ✅ **live** | https://shivamkr0408.github.io/AgentShield/ — enabled via API, serving. Fill the placeholder deploy links in `docs/index.html` once Render/Vercel/HF are up. |
 | 7. Hugging Face Space | ⛔ you | `spaces/huggingface/` ready (Docker, port 7860). Create + push the Space. |
 | 8. Dataset release | ✅ docs / ⛔ upload | Card (`docs/hf-dataset-README.md`), `docs/DATASHEET.md`, `docs/ETHICS.md` done. Upload the split files + card to the HF dataset repo. Attack class currently = public English ingest; add the human multilingual set for the full story. |
 | 9. README & release | ✅ done | Badges, links table, hosting, citation. **Release v1.1.0 created.** |

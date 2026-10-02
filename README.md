@@ -16,7 +16,11 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full 15-week plan and [docs/liter
 | Report | [docs/report/report.md](docs/report/report.md) ([.docx](docs/report/report.docx)) |
 | Paper | [docs/paper/main.tex](docs/paper/main.tex) |
 | Dataset card | [docs/dataset-card.md](docs/dataset-card.md) · [datasheet](docs/DATASHEET.md) · [ethics](docs/ETHICS.md) |
-| Live dashboard / API / demo | set after deploy — see [docs/SUBMISSION.md](docs/SUBMISSION.md) |
+| Live Dashboard | https://agent-shield-six.vercel.app |
+| API | https://agentshield-api-83kj.onrender.com |
+| GitHub Pages | https://shivamkr0408.github.io/AgentShield/ |
+| Hugging Face Demo | https://huggingface.co/spaces/shivamkrgupta/AgentShield |
+| Hugging Face Dataset | https://huggingface.co/datasets/shivamkrgupta/AgentShield-dataset |
 
 ## Status
 

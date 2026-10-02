@@ -51,8 +51,8 @@ Everything needed for submission, in one place.
 ## Verification checklist
 
 - [ ] Every live link opens on mobile data (not just your Wi-Fi).
-- [ ] No secrets in the repo or its history (only `…FAKE…` sandbox placeholders).
-- [ ] README states which results are from the full local system vs. the live demo.
+- [x] No secrets in repo or history (scanned all commits; only `.env.example` template and the `…FAKE…` sandbox `credentials.env`).
+- [x] README/report/landing page state which results are full-local vs. the live demo.
 - [x] Repo is public (verified) — HF Space can clone it.
 - [x] GitHub Pages enabled and live.
-- [ ] CI is green on `main`.
+- [x] CI is green on `main`.
